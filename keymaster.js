@@ -133,6 +133,11 @@
 
   function filter(event){
     var tagName = (event.target || event.srcElement).tagName;
+    //ingnore editable divs
+    if (event.srcElement) {
+      if (event.srcElement.getAttribute('contenteditable')==='true')
+        tagName="TEXTAREA";
+    }
     // ignore keypressed in any elements that support keyboard data input
     return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA');
   }
