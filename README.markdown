@@ -1,7 +1,9 @@
 # keymaster.js
 
-Keymaster is a simple (100 LoC or so) micro-library for defining and
-dispatching keyboard shortcuts. It has no dependencies.
+Keymaster is a simple micro-library for defining and
+dispatching keyboard shortcuts in web applications. 
+
+It has no dependencies.
 
 *It’s a work in progress (e.g. beta), so spare me your nerdrage and instead
 contribute! Patches are welcome, but they are not guaranteed to make
@@ -135,6 +137,20 @@ key()
 // --> TypeError: 'undefined' is not a function
 ```
 
+## Unbinding shortcuts
+
+Similar to defining shortcuts, they can be unbound using `key.unbind`.
+
+```javascript
+// unbind 'a' handler
+key.unbind('a');
+
+// unbind a key only for a single scope
+// when no scope is specified it defaults to the current scope (key.getScope())
+key.unbind('o, enter', 'issues');
+key.unbind('o, enter', 'files');
+```
+
 ## Notes
 
 Keymaster should work with any browser that fires `keyup` and `keydown` events,
@@ -182,5 +198,5 @@ submit a pull request.
 
 * Finish test suite
 
-Keymaster is (c) 2011-2012 Thomas Fuchs and may be freely distributed under the MIT license.
+Keymaster is (c) 2011-2013 Thomas Fuchs and may be freely distributed under the MIT license.
 See the `MIT-LICENSE` file.
