@@ -174,6 +174,31 @@
         t.assertEqual(1, cntCommandCtrlAltShiftA);
       },
 
+      testUnbindWithModifiersMultiple: function(t){
+        var cntA = 0, cntShiftA = 0, cntCtrlShiftA = 0;
+        key('a', function(){ cntA++ });
+        key('shift+a', function(){ cntShiftA++ });
+        key('ctrl+shift+a', function(){ cntCtrlShiftA++ });
+
+        keydown(65); keyup(65);
+        keydown(KEYS.shift); keydown(65, [16]); keyup(65); keyup(KEYS.shift);
+        keydown(KEYS.shift); keydown(KEYS.ctrl); keydown(65, [16, 17]); keyup(65); keyup(KEYS.shift); keyup(KEYS.ctrl);
+
+        t.assertEqual(1, cntA);
+        t.assertEqual(1, cntShiftA);
+        t.assertEqual(1, cntCtrlShiftA);
+
+        key.unbind('a, shift+a, ctrl+shift+a');
+
+        keydown(65); keyup(65);
+        keydown(KEYS.shift); keydown(65, [16]); keyup(65); keyup(KEYS.shift);
+        keydown(KEYS.shift); keydown(KEYS.ctrl); keydown(65, [16, 17]); keyup(65); keyup(KEYS.shift); keyup(KEYS.ctrl);
+
+        t.assertEqual(1, cntA);
+        t.assertEqual(1, cntShiftA);
+        t.assertEqual(1, cntCtrlShiftA);
+      },
+
       testFancyModifierKeys: function(t){
         var sequence = '';
         key('⌃+a', function(){ sequence += 'a' });
@@ -292,7 +317,7 @@
         var cntIssues = 0, cntFiles = 0;
         key('a', 'issues', function(){ cntIssues++ });
         key('a', 'files', function(){ cntFiles++ });
-        
+
         key.setScope('issues');
         keydown(65);
         keyup(65);
@@ -301,7 +326,7 @@
         keydown(65);
         keyup(65);
         t.assertEqual(1, cntIssues);
-        
+
         key.setScope('files');
         keydown(65);
         keyup(65);
@@ -372,6 +397,42 @@
         keydown(65); keyup(65);
         t.assertEqual(called, true);
         window.key = k;
+      },
+
+      testScopeChangeDuringFilter: function(t) {
+        var oldFilter = key.filter
+          , scope1Pressed = 0
+          , scope2Pressed = 0;
+
+        key('a', 'scope1', function() {
+          ++scope1Pressed;
+        });
+
+        key('a', 'scope2', function() {
+          ++scope2Pressed;
+        });
+
+        key.filter = function() {
+          key.setScope('scope1');
+          return true;
+        };
+
+        keydown(65);
+        keyup(65);
+        t.assertTrue(scope1Pressed === 1);
+
+        key.filter = function() {
+          key.setScope('scope2');
+          return true;
+        };
+
+        keydown(65);
+        keyup(65);
+        t.assertTrue(scope1Pressed === 1);
+        t.assertTrue(scope2Pressed === 1);
+
+        key.filter = oldFilter;
+        key.setScope();
       }
     });
   </script>
