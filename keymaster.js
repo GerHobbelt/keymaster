@@ -270,27 +270,27 @@
   // reset modifiers to false whenever the window is (re)focused.
   addEvent(window, 'focus', resetModifiers);
 
-  // store previously defined key
-  var previousKey = global.key;
+  // store previously defined keymaster
+  var previousKey = global.keymaster;
 
   // restore previously defined key and return reference to our key object
   function noConflict() {
-    var k = global.key;
-    global.key = previousKey;
+    var k = global.keymaster;
+    global.keymaster = previousKey;
     return k;
   }
 
   // set window.key and window.key.set/get/deleteScope, and the default filter
-  global.key = assignKey;
-  global.key.setScope = setScope;
-  global.key.getScope = getScope;
-  global.key.deleteScope = deleteScope;
-  global.key.filter = filter;
-  global.key.isPressed = isPressed;
-  global.key.getPressedKeyCodes = getPressedKeyCodes;
-  global.key.noConflict = noConflict;
-  global.key.unbind = unbindKey;
+  global.keymaster = assignKey;
+  global.keymaster.setScope = setScope;
+  global.keymaster.getScope = getScope;
+  global.keymaster.deleteScope = deleteScope;
+  global.keymaster.filter = filter;
+  global.keymaster.isPressed = isPressed;
+  global.keymaster.getPressedKeyCodes = getPressedKeyCodes;
+  global.keymaster.noConflict = noConflict;
+  global.keymaster.unbind = unbindKey;
 
-  if(typeof module !== 'undefined') module.exports = key;
+  if(typeof module !== 'undefined') module.exports = keymaster;
 
 })(this);
