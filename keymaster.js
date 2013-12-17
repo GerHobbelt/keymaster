@@ -212,8 +212,13 @@
       return _downKeys.slice(0);
   }
 
-  function filter(event){
+  function filter(event) {
     var tagName = (event.target || event.srcElement).tagName;
+    // ignore editable divs
+    if (event.srcElement) {
+      if (event.srcElement.getAttribute('contenteditable') === 'true')
+        return false;
+    }
     // ignore keypresses in any elements that support keyboard data input
     return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA');
   }
