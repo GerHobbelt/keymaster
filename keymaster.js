@@ -82,7 +82,7 @@
     }
     updateModifierKey(event);
 
-    // see if we need to ignore the keypress (filter() can can be overridden)
+    // see if we need to ignore the keypress (filter() can be overridden)
     // by default ignore key presses if a select, textarea, or input is focused
     if(!assignKey.filter.call(this, event)) return;
 
@@ -103,7 +103,7 @@
           if((!_mods[k] && index(handler.mods, +k) > -1) ||
             (_mods[k] && index(handler.mods, +k) == -1)) modifiersMatch = false;
         // call the handler and stop the event if necessary
-        if((handler.mods.length == 0 && !_mods[16] && !_mods[18] && !_mods[17] && !_mods[91]) || modifiersMatch){
+        if((handler.mods.length === 0 && !_mods[16] && !_mods[18] && !_mods[17] && !_mods[91]) || modifiersMatch){
           if(handler.method(event, handler)===false){
             if(event.preventDefault) event.preventDefault();
               else event.returnValue = false;
@@ -113,7 +113,7 @@
         }
       }
     }
-  };
+  }
 
   // unset modifier keys on keyup
   function clearModifier(event){
@@ -130,12 +130,13 @@
       _mods[key] = false;
       for(k in _MODIFIERS) if(_MODIFIERS[k] == key) assignKey[k] = false;
     }
-  };
+  }
 
   function resetModifiers() {
+    var k;
     for(k in _mods) _mods[k] = false;
     for(k in _MODIFIERS) assignKey[k] = false;
-  };
+  }
 
   // parse and assign shortcut
   function assignKey(key, scope, method){
@@ -162,7 +163,7 @@
       if (!(key in _handlers)) _handlers[key] = [];
       _handlers[key].push({ shortcut: keys[i], scope: scope, method: method, key: keys[i], mods: mods });
     }
-  };
+  }
 
   // unbind all handlers for given key in current scope
   function unbindKey(key, scope) {
@@ -196,7 +197,7 @@
         }
       }
     }
-  };
+  }
 
   // Returns true if the key with code 'keyCode' is currently down
   // Converts strings into key codes.
@@ -221,8 +222,8 @@
   for(k in _MODIFIERS) assignKey[k] = false;
 
   // set current scope (default 'all')
-  function setScope(scope){ _scope = scope || 'all' };
-  function getScope(){ return _scope || 'all' };
+  function setScope(scope){ _scope = scope || 'all'; }
+  function getScope(){ return _scope || 'all'; }
 
   // delete all handlers for a given scope
   function deleteScope(scope){
@@ -262,10 +263,10 @@
       object.addEventListener(event, method, false);
     else if(object.attachEvent)
       object.attachEvent('on'+event, function(){ method(window.event) });
-  };
+  }
 
   // set the handlers globally on document
-  addEvent(document, 'keydown', function(event) { dispatch(event) }); // Passing _scope to a callback to ensure it remains the same by execution. Fixes #48
+  addEvent(document, 'keydown', function(event) { dispatch(event); }); // Passing _scope to a callback to ensure it remains the same by execution. Fixes #48
   addEvent(document, 'keyup', clearModifier);
 
   // reset modifiers to false whenever the window is (re)focused.
