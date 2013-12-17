@@ -35,6 +35,7 @@
     _downKeys = [];
 
   for(k=1;k<20;k++) _MAP['f'+k] = 111+k;
+  for(k=0;k<10;k++) _MAP['numpad_'+k] = 96+k;
 
   // IE doesn't support Array#indexOf, so have a simple replacement
   function index(array, item){
