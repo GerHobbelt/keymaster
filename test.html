@@ -33,54 +33,55 @@
   </p>
 
   <script>
-    key('c', 'issues', function(){
+    keymaster('c', 'issues', function(){
      console.log('c/issues');
     });
 
-    key('command+r, ctrl+r', 'issues', function(){
+    keymaster('command+r, ctrl+r', 'issues', function(){
       console.log('Hijacked Command+R or Ctrl+R, damn!');
       return false;
     });
     
-    key('i', function(){
-      key.setScope('issues');
+    keymaster('i', function(){
+      keymaster.setScope('issues');
       console.log('Switched to "issues" scope. Command+R or Ctrl+R is now no longer reloading...');
     });
     
-    key('i', function(){
+    keymaster('i', function(){
       console.log('(example of multiple assignment)');
     });
 
-    key('o, enter, left', function(){
+    keymaster('o, enter, left', function(){
       console.log('o, enter or left pressed!');
     });
 
-    key('ctrl+c', function(){
+    keymaster('ctrl+c', function(){
       console.log('this is not the command line');
     });
 
-    key('⌘+right,shift+left,ctrl+shift+alt+d', function(event){
+    keymaster('⌘+right,shift+left,ctrl+shift+alt+d', function(event){
       console.log('command+right, or shift+left, or ctrl+shift+alt+d');
       console.log('here is the event: ', event);
-      console.log('key.control', key.control);
-      console.log('key.ctrl', key.ctrl);
-      console.log('key.shift', key.shift);
-      console.log('key.alt', key.alt);
-      console.log('key["⌘"]', key["⌘"]);
+      console.log('key.control', keymaster.control);
+      console.log('key.ctrl', keymaster.ctrl);
+      console.log('key.shift', keymaster.shift);
+      console.log('key.alt', keymaster.alt);
+      console.log('key.command', keymaster.command);
+      console.log('key["⌘"]', keymaster["⌘"]);
       return false; // prevent default && stop propagation
     });
 
-    key('⌘+x, ctrl+x', function(event, handler){
+    keymaster('⌘+x, ctrl+x', function(event, handler){
       console.log(handler.shortcut, handler.scope);
       return false;
     });
 
-    key('/', function(){ console.log('/') });
-    key('shift+]', function(){ console.log('shift+]') });
+    keymaster('/', function(){ console.log('/') });
+    keymaster('shift+]', function(){ console.log('shift+]') });
 
     setInterval(function () { 
-        console.log('All keys currently down: ' + key.getPressedKeyCodes());
-        if (key.isPressed(77)) {
+        console.log('All keys currently down: ' + keymaster.getPressedKeyCodes());
+        if (keymaster.isPressed(77)) {
             console.log('M key is currently down');
         }
     }, 1000);

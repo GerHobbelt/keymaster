@@ -31,13 +31,13 @@ called directly.
 
 ```javascript
 // define short of 'a'
-key('a', function(){ alert('you pressed a!') });
+keymaster('a', function(){ alert('you pressed a!') });
 
 // returning false stops the event and prevents default browser events
-key('ctrl+r', function(){ alert('stopped reload!'); return false });
+keymaster('ctrl+r', function(){ alert('stopped reload!'); return false });
 
 // multiple shortcuts that do the same thing
-key('⌘+r, ctrl+r', function(){ });
+keymaster('⌘+r, ctrl+r', function(){ });
 ```
 
 The handler method is called with two arguments set, the keydown `event` fired, and
@@ -47,7 +47,7 @@ an object containing, among others, the following two properties:
 `scope`: a string describing the scope (or `all`)
 
 ```javascript
-key('⌘+r, ctrl+r', function(event, handler){
+keymaster('⌘+r, ctrl+r', function(event, handler){
   console.log(handler.shortcut, handler.scope);
 });
 
@@ -69,45 +69,45 @@ and `f1` through `f19`.
 ## Modifier key queries
 
 At any point in time (even in code other than key shortcut handlers),
-you can query the `key` object for the state of any keys. This
+you can query the `keymaster` object for the state of any keys. This
 allows easy implementation of things like shift+click handlers. For example,
-`key.shift` is `true` if the shift key is currently pressed.
+`keymaster.shift` is `true` if the shift key is currently pressed.
 
 ```javascript
-if(key.shift) alert('shift is pressed, OMGZ!');
+if(keymaster.shift) alert('shift is pressed, OMGZ!');
 ```
 
 
 ## Other key queries
 
 At any point in time (even in code other than key shortcut handlers),
-you can query the `key` object for the state of any key. This
+you can query the `keymaster` object for the state of any key. This
 is very helpful for game development using a game loop. For example,
-`key.isPressed(77)` is `true` if the M key is currently pressed.
+`keymaster.isPressed(77)` is `true` if the M key is currently pressed.
 
 ```javascript
-if(key.isPressed("M")) alert('M key is pressed, can ya believe it!?');
-if(key.isPressed(77)) alert('M key is pressed, can ya believe it!?');
+if(keymaster.isPressed("M")) alert('M key is pressed, can ya believe it!?');
+if(keymaster.isPressed(77)) alert('M key is pressed, can ya believe it!?');
 ```
 
 You can also get these as an array using...
 ```javascript
-key.getPressedKeyCodes() // returns an array of key codes currently pressed
+keymaster.getPressedKeyCodes() // returns an array of key codes currently pressed
 ```
 
 
 ## Scopes
 
 If you want to reuse the same shortcut for separate areas in your single page app,
-Keymaster supports switching between scopes. Use the `key.setScope` method to set scope.
+Keymaster supports switching between scopes. Use the `keymaster.setScope` method to set scope.
 
 ```javascript
 // define shortcuts with a scope
-key('o, enter', 'issues', function(){ /* do something */ });
-key('o, enter', 'files', function(){ /* do something else */ });
+keymaster('o, enter', 'issues', function(){ /* do something */ });
+keymaster('o, enter', 'files', function(){ /* do something else */ });
 
 // set the scope (only 'all' and 'issues' shortcuts will be honored)
-key.setScope('issues'); // default scope is 'all'
+keymaster.setScope('issues'); // default scope is 'all'
 ```
 
 
@@ -115,7 +115,7 @@ key.setScope('issues'); // default scope is 'all'
 
 By default, when an `INPUT`, `SELECT` or `TEXTAREA` element is focused, Keymaster doesn't process any shortcuts.
 
-You can change this by overwriting `key.filter` with a new function. This function is called before
+You can change this by overwriting `keymaster.filter` with a new function. This function is called before
 Keymaster processes shortcuts, with the keydown event as argument.
 
 If your function returns false, then the no shortcuts will be processed.
@@ -130,13 +130,13 @@ function filter(event){
 ```
 
 If you only want _some_ shortcuts to work while in an input element, you can change the scope in the
-`key.filter` function. Here's an example implementation, setting the scope to either `'input'` or `'other'`.
+`keymaster.filter` function. Here's an example implementation, setting the scope to either `'input'` or `'other'`.
 Don't forget to return `true` so the any shortcuts get processed.
 
 ```javascript
-key.filter = function(event){
+keymaster.filter = function(event){
   var tagName = (event.target || event.srcElement).tagName;
-  key.setScope(/^(INPUT|TEXTAREA|SELECT)$/.test(tagName) ? 'input' : 'other');
+  keymaster.setScope(/^(INPUT|TEXTAREA|SELECT)$/.test(tagName) ? 'input' : 'other');
   return true;
 }
 ```
@@ -147,29 +147,29 @@ focus and blur event handlers on your input element, and change scopes there as 
 
 ## noConflict mode
 
-You can call ```key.noConflict``` to remove the ```key``` function from global scope and restore whatever ```key``` was defined to before Keymaster was loaded. Calling ```key.noConflict``` will return the Keymaster ```key``` function.
+You can call ```keymaster.noConflict``` to remove the ```keymaster``` function from global scope and restore whatever ```keymaster``` was defined to before Keymaster was loaded. Calling ```keymaster.noConflict``` will return the Keymaster ```keymaster``` function.
 
 ```javascript
-var k = key.noConflict();
+var k = keymaster.noConflict();
 k('a', function() { /* ... */ });
 
-key()
+keymaster()
 // --> TypeError: 'undefined' is not a function
 ```
 
 
 ## Unbinding shortcuts
 
-Similar to defining shortcuts, they can be unbound using `key.unbind`.
+Similar to defining shortcuts, they can be unbound using `keymaster.unbind`.
 
 ```javascript
 // unbind 'a' handler
-key.unbind('a');
+keymaster.unbind('a');
 
 // unbind a key only for a single scope
-// when no scope is specified it defaults to the current scope (key.getScope())
-key.unbind('o, enter', 'issues');
-key.unbind('o, enter', 'files');
+// when no scope is specified it defaults to the current scope (keymaster.getScope())
+keymaster.unbind('o, enter', 'issues');
+keymaster.unbind('o, enter', 'files');
 ```
 
 
@@ -186,16 +186,16 @@ See [http://madrobby.github.com/keymaster/](http://madrobby.github.com/keymaster
 If you're using CoffeeScript, configuring key shortcuts couldn't be simpler:
 
 ```coffeescript
-key 'a', -> alert('you pressed a!')
+keymaster 'a', -> alert('you pressed a!')
 
-key '⌘+r, ctrl+r', ->
+keymaster '⌘+r, ctrl+r', ->
   alert 'stopped reload!'
   off
 
-key 'o, enter', 'issues', ->
+keymaster 'o, enter', 'issues', ->
   whatevs()
 
-alert 'shift is pressed, OMGZ!' if key.shift
+alert 'shift is pressed, OMGZ!' if keymaster.shift
 ```
 
 

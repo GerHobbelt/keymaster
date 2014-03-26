@@ -36,8 +36,11 @@
       var event = document.createEvent('Event');
       event.initEvent('keydown', true, true);
       event.keyCode = code;
-      if (modifiers && modifiers.length > 0)
-          for(i in modifiers) event[modifierMap[modifiers[i]]] = true;
+      if (modifiers && modifiers.length > 0) {
+        for (var i in modifiers) {
+          event[modifierMap[modifiers[i]]] = true;
+        }
+      }
       (el||document).dispatchEvent(event);
     }
 
@@ -58,7 +61,7 @@
     Evidence.TestCase.extend('KeymasterTest', {
       testShortcut: function(t){
         var cnt = 0;
-        key('a', function(){ cnt++ });
+        keymaster('a', function(){ cnt++ });
         keydown(65);
         keyup(65);
         t.assertEqual(1, cnt);
@@ -69,23 +72,23 @@
 
       testUnbind: function(t){
         var cnt = 0;
-        key('a', function(){ cnt++ });
+        keymaster('a', function(){ cnt++ });
         keydown(65);
         keyup(65);
         t.assertEqual(1, cnt);
-        key.unbind('a');
+        keymaster.unbind('a');
         keydown(65);
         keyup(65);
         t.assertEqual(1, cnt);
 
         cnt = 0;
-        key('a, b', function(){ cnt++ });
+        keymaster('a, b', function(){ cnt++ });
         keydown(65);
         keyup(65);
         keydown(66);
         keyup(66);
         t.assertEqual(2, cnt);
-        key.unbind('a, b');
+        keymaster.unbind('a, b');
         keydown(65);
         keyup(65);
         keydown(66);
@@ -93,19 +96,19 @@
         t.assertEqual(2, cnt);
 
         cnt = 0;
-        key('a, b', function() { cnt++ });
+        keymaster('a, b', function() { cnt++ });
         keydown(65);
         keyup(65);
         keydown(66);
         keyup(66);
         t.assertEqual(2, cnt);
-        key.unbind('a');
+        keymaster.unbind('a');
         keydown(65);
         keyup(65);
         keydown(66);
         keyup(66);
         t.assertEqual(3, cnt);
-        key.unbind('b');
+        keymaster.unbind('b');
         keydown(65);
         keyup(65);
         keydown(66);
@@ -113,19 +116,19 @@
         t.assertEqual(3, cnt);
 
         cnt = 0;
-        key('a, b', function() { cnt++ });
+        keymaster('a, b', function() { cnt++ });
         keydown(65);
         keyup(65);
         keydown(66);
         keyup(66);
         t.assertEqual(2, cnt);
-        key.unbind('b');
+        keymaster.unbind('b');
         keydown(65);
         keyup(65);
         keydown(66);
         keyup(66);
         t.assertEqual(3, cnt);
-        key.unbind('a');
+        keymaster.unbind('a');
         keydown(65);
         keyup(65);
         keydown(66);
@@ -135,11 +138,11 @@
 
       testShortcutWithModifiers: function(t){
         var cntA = 0, cntShiftA = 0, cntCtrlShiftA = 0, cntCommandCtrlShiftA = 0, cntCommandCtrlAltShiftA = 0;
-        key('a', function(){ cntA++ });
-        key('shift+a', function(){ cntShiftA++ });
-        key('ctrl+shift+a', function(){ cntCtrlShiftA++ });
-        key('command+ctrl+shift+a', function(){ cntCommandCtrlShiftA++ });
-        key('command+ctrl+alt+shift+a', function(){ cntCommandCtrlAltShiftA++ });
+        keymaster('a', function(){ cntA++ });
+        keymaster('shift+a', function(){ cntShiftA++ });
+        keymaster('ctrl+shift+a', function(){ cntCtrlShiftA++ });
+        keymaster('command+ctrl+shift+a', function(){ cntCommandCtrlShiftA++ });
+        keymaster('command+ctrl+alt+shift+a', function(){ cntCommandCtrlAltShiftA++ });
 
         keydown(65); keyup(65);
         t.assertEqual(1, cntA);
@@ -183,11 +186,11 @@
 
       testUnbindWithModifiers: function(t){
         var cntA = 0, cntShiftA = 0, cntCtrlShiftA = 0, cntCommandCtrlShiftA = 0, cntCommandCtrlAltShiftA = 0;
-        key('a', function(){ cntA++ });
-        key('shift+a', function(){ cntShiftA++ });
-        key('ctrl+shift+a', function(){ cntCtrlShiftA++ });
-        key('command+ctrl+shift+a', function(){ cntCommandCtrlShiftA++ });
-        key('command+ctrl+alt+shift+a', function(){ cntCommandCtrlAltShiftA++ });
+        keymaster('a', function(){ cntA++ });
+        keymaster('shift+a', function(){ cntShiftA++ });
+        keymaster('ctrl+shift+a', function(){ cntCtrlShiftA++ });
+        keymaster('command+ctrl+shift+a', function(){ cntCommandCtrlShiftA++ });
+        keymaster('command+ctrl+alt+shift+a', function(){ cntCommandCtrlAltShiftA++ });
 
         keydown(65); keyup(65);
         keydown(KEYS.shift); keydown(65, [16]); keyup(65); keyup(KEYS.shift);
@@ -205,11 +208,11 @@
         t.assertEqual(1, cntCommandCtrlShiftA);
         t.assertEqual(1, cntCommandCtrlAltShiftA);
 
-        key.unbind('a');
-        key.unbind('shift+a');
-        key.unbind('ctrl+shift+a');
-        key.unbind('command+ctrl+shift+a');
-        key.unbind('command+ctrl+alt+shift+a');
+        keymaster.unbind('a');
+        keymaster.unbind('shift+a');
+        keymaster.unbind('ctrl+shift+a');
+        keymaster.unbind('command+ctrl+shift+a');
+        keymaster.unbind('command+ctrl+alt+shift+a');
 
         keydown(65); keyup(65);
         keydown(KEYS.shift); keydown(65, [16]); keyup(65); keyup(KEYS.shift);
@@ -230,9 +233,9 @@
 
       testUnbindWithModifiersMultiple: function(t){
         var cntA = 0, cntShiftA = 0, cntCtrlShiftA = 0;
-        key('a', function(){ cntA++ });
-        key('shift+a', function(){ cntShiftA++ });
-        key('ctrl+shift+a', function(){ cntCtrlShiftA++ });
+        keymaster('a', function(){ cntA++ });
+        keymaster('shift+a', function(){ cntShiftA++ });
+        keymaster('ctrl+shift+a', function(){ cntCtrlShiftA++ });
 
         keydown(65); keyup(65);
         keydown(KEYS.shift); keydown(65, [16]); keyup(65); keyup(KEYS.shift);
@@ -242,7 +245,7 @@
         t.assertEqual(1, cntShiftA);
         t.assertEqual(1, cntCtrlShiftA);
 
-        key.unbind('a, shift+a, ctrl+shift+a');
+        keymaster.unbind('a, shift+a, ctrl+shift+a');
 
         keydown(65); keyup(65);
         keydown(KEYS.shift); keydown(65, [16]); keyup(65); keyup(KEYS.shift);
@@ -255,10 +258,10 @@
 
       testFancyModifierKeys: function(t){
         var sequence = '';
-        key('⌃+a', function(){ sequence += 'a' });
-        key('⌥+b', function(){ sequence += 'b' });
-        key('⇧+c', function(){ sequence += 'c' });
-        key('⌘+d', function(){ sequence += 'd' });
+        keymaster('⌃+a', function(){ sequence += 'a' });
+        keymaster('⌥+b', function(){ sequence += 'b' });
+        keymaster('⇧+c', function(){ sequence += 'c' });
+        keymaster('⌘+d', function(){ sequence += 'd' });
 
         keydown(KEYS.ctrl); keydown(65, [17]); keyup(65); keyup(KEYS.ctrl);
         keydown(KEYS.option); keydown(66, [18]); keyup(66); keyup(KEYS.option);
@@ -276,10 +279,12 @@
             '[': 219, ']': 221, '\\': 220 };
 
         for(character in keys){
-          key(character, (function(character){
+          // losure for character:
+          keymaster(character, (function(character){
             return function(){ sequence += character }
           })(character));
-          keydown(keys[character]); keyup(keys[character]);
+          keydown(keys[character]); 
+          keyup(keys[character]);
         }
 
         t.assertEqual(',./`-=;\'[]\\', sequence);
@@ -287,11 +292,16 @@
 
       testFKeys: function(t) {
         var sequence = '';
-        for(var i=1;i<=19;i++) {
-          key('f' + i , function(){ sequence += '' + i });
+        for(var i=1;i<=24;i++) {
+          // closure for i:
+          (function (i) {
+            keymaster('f' + i , function(){ 
+              sequence += '' + i; 
+            });
+          })(i);
         }
 
-        for(var i=1;i<=19;i++) {
+        for(var i=1;i<=24;i++) {
           keydown(111 + i);
           keyup(111 + i);
         }
@@ -318,17 +328,17 @@
       testScoping: function(t){
         var sequence = '';
 
-        key('a', function(){ sequence += 'a' });
-        key('b', function(){ sequence += 'b' });
-        key('b', 'capital', function(){ sequence += 'B' });
+        keymaster('a', function(){ sequence += 'a' });
+        keymaster('b', function(){ sequence += 'b' });
+        keymaster('b', 'capital', function(){ sequence += 'B' });
 
         keydown(65); keyup(65);
-        key.setScope('capital');
+        keymaster.setScope('capital');
         keydown(66); keyup(66);
         keydown(65); keyup(65);
-        key.setScope('unknown');
+        keymaster.setScope('unknown');
         keydown(66); keyup(66);
-        key.setScope('all');
+        keymaster.setScope('all');
         keydown(65); keyup(65);
 
         t.assertEqual('abBaba', sequence);
@@ -336,13 +346,13 @@
         // it should not call second callback after changing scope in one of callbacks
         var sequence = '';
 
-        key('c', 'a', function(){ sequence += 'a'; key.setScope('b');  });
-        key('c', 'b', function(){ sequence += 'b'; });
+        keymaster('c', 'a', function(){ sequence += 'a'; keymaster.setScope('b');  });
+        keymaster('c', 'b', function(){ sequence += 'b'; });
 
-        key.setScope('a');
+        keymaster.setScope('a');
         keydown(67); keyup(67);
         keydown(67); keyup(67);
-        key.setScope('all');
+        keymaster.setScope('all');
 
         t.assertEqual('ab', sequence);
       },
@@ -350,17 +360,17 @@
       testDeleteScope: function(t){
         var sequence = '';
 
-        key('a', function(){ sequence += 'a' });
-        key('b', function(){ sequence += 'b' });
-        key('a', 'capital', function(){ sequence += 'A' });
-        key('b', 'capital', function(){ sequence += 'B' });
+        keymaster('a', function(){ sequence += 'a' });
+        keymaster('b', function(){ sequence += 'b' });
+        keymaster('a', 'capital', function(){ sequence += 'A' });
+        keymaster('b', 'capital', function(){ sequence += 'B' });
 
         keydown(65); keyup(65);
         keydown(66); keyup(66);
-        key.setScope('capital');
+        keymaster.setScope('capital');
         keydown(65); keyup(65);
         keydown(66); keyup(66);
-        key.deleteScope('capital');
+        keymaster.deleteScope('capital');
         keydown(65); keyup(65);
         keydown(66); keyup(66);
 
@@ -369,23 +379,23 @@
 
       testUnbindWithScope: function(t){
         var cntIssues = 0, cntFiles = 0;
-        key('a', 'issues', function(){ cntIssues++ });
-        key('a', 'files', function(){ cntFiles++ });
+        keymaster('a', 'issues', function(){ cntIssues++ });
+        keymaster('a', 'files', function(){ cntFiles++ });
 
-        key.setScope('issues');
+        keymaster.setScope('issues');
         keydown(65);
         keyup(65);
         t.assertEqual(1, cntIssues);
-        key.unbind('a', 'issues');
+        keymaster.unbind('a', 'issues');
         keydown(65);
         keyup(65);
         t.assertEqual(1, cntIssues);
 
-        key.setScope('files');
+        keymaster.setScope('files');
         keydown(65);
         keyup(65);
         t.assertEqual(1, cntFiles);
-        key.unbind('a', 'files');
+        keymaster.unbind('a', 'files');
         keydown(65);
         keyup(65);
         t.assertEqual(1, cntFiles);
@@ -397,20 +407,20 @@
       },
 
       testCallsFilterFunction: function(t){
-        var oldFilter = key.filter, filterCalls = 0, keyCalls = 0;
+        var oldFilter = keymaster.filter, filterCalls = 0, keyCalls = 0;
 
-        key.filter = function(event){
+        keymaster.filter = function(event){
           filterCalls++;
           return false;
         }
 
-        key('a', function(){ keyCalls++; });
+        keymaster('a', function(){ keyCalls++; });
         keydown(65); keyup(65);
 
         t.assertEqual(1, filterCalls);
         t.assertEqual(0, keyCalls);
 
-        key.filter = oldFilter;
+        keymaster.filter = oldFilter;
         keydown(65); keyup(65);
 
         t.assertEqual(1, filterCalls);
@@ -419,22 +429,22 @@
 
       testIsPressed: function (t) {
         keydown(65);
-        t.assertTrue(key.isPressed(65));
-        t.assertTrue(key.isPressed("a"));
+        t.assertTrue(keymaster.isPressed(65));
+        t.assertTrue(keymaster.isPressed("a"));
         keyup(65);
 
         keydown(66); keyup(66);
-        t.assertFalse(key.isPressed(66));
+        t.assertFalse(keymaster.isPressed(66));
 
         keydown(38);
-        t.assertTrue(key.isPressed("up"));
+        t.assertTrue(keymaster.isPressed("up"));
         keyup(38);
       },
 
       testGetPressedKeyCodes: function (t) {
         keydown(65); keydown(KEYS.shift);
-        var pressedKeys = key.getPressedKeyCodes();
-        var otherKeys = key.getPressedKeyCodes();
+        var pressedKeys = keymaster.getPressedKeyCodes();
+        var otherKeys = keymaster.getPressedKeyCodes();
         t.assertTrue(pressedKeys.indexOf(65) >= 0);
         t.assertTrue(pressedKeys.indexOf(16) >= 0);
         t.assertTrue(pressedKeys !== otherKeys);
@@ -442,7 +452,7 @@
       },
 
       testNoConflict: function(t) {
-        var k = key.noConflict();
+        var k = keymaster.noConflict();
         t.assertEqual(undefined, window.key);
         var called = false;
         k('a', function() {
@@ -454,20 +464,20 @@
       },
 
       testScopeChangeDuringFilter: function(t) {
-        var oldFilter = key.filter
-          , scope1Pressed = 0
-          , scope2Pressed = 0;
+        var oldFilter = keymaster.filter,
+            scope1Pressed = 0,
+            scope2Pressed = 0;
 
-        key('a', 'scope1', function() {
+        keymaster('a', 'scope1', function() {
           ++scope1Pressed;
         });
 
-        key('a', 'scope2', function() {
+        keymaster('a', 'scope2', function() {
           ++scope2Pressed;
         });
 
-        key.filter = function() {
-          key.setScope('scope1');
+        keymaster.filter = function() {
+          keymaster.setScope('scope1');
           return true;
         };
 
@@ -475,8 +485,8 @@
         keyup(65);
         t.assertTrue(scope1Pressed === 1);
 
-        key.filter = function() {
-          key.setScope('scope2');
+        keymaster.filter = function() {
+          keymaster.setScope('scope2');
           return true;
         };
 
@@ -485,8 +495,8 @@
         t.assertTrue(scope1Pressed === 1);
         t.assertTrue(scope2Pressed === 1);
 
-        key.filter = oldFilter;
-        key.setScope();
+        keymaster.filter = oldFilter;
+        keymaster.setScope();
       }
     });
   </script>

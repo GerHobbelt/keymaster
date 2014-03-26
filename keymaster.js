@@ -2,10 +2,31 @@
 //     (c) 2011-2013 Thomas Fuchs
 //     keymaster.js may be freely distributed under the MIT license.
 
-;(function(global){
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define([], function () {
+            return (root.keymaster = factory(root, window, document));
+        });
+    } else if (typeof exports === 'object') {
+        // Node. Does not work with strict CommonJS, but
+        // only CommonJS-like environments that support module.exports,
+        // like Node.
+        module.exports = factory(root, window, document);
+    } else {
+        // Browser globals
+        root.keymaster = factory(root, window, document);
+    }
+}(this, function (global, window, document) {
   var k,
     _handlers = {},
-    _mods = { 16: false, 18: false, 17: false, 91: false },
+    // keeps track which of these keys is currently depressed:
+    _mods = { 
+      16: false,    // shift 
+      18: false,    // option / alt
+      17: false,    // control
+      91: false     // command key on OSX a.k.a. META
+    },
     _scope = 'all',
     // modifier keys
     _MODIFIERS = {
@@ -16,31 +37,52 @@
     },
     // special keys
     _MAP = {
-      backspace: 8, tab: 9, clear: 12,
-      enter: 13, 'return': 13,
-      esc: 27, escape: 27, space: 32,
-      left: 37, up: 38,
-      right: 39, down: 40,
+      backspace: 8, 
+      tab: 9, 
+      clear: 12,
+      enter: 13, 
+      'return': 13,
+      esc: 27, escape: 27, 
+      space: 32,
+      left: 37, 
+      up: 38,
+      right: 39, 
+      down: 40,
       del: 46, 'delete': 46,
-      home: 36, end: 35,
-      pageup: 33, pagedown: 34,
-      ',': 188, '.': 190, '/': 191,
-      '`': 192, '-': 189, '=': 187,
-      ';': 186, '\'': 222,
-      '[': 219, ']': 221, '\\': 220
+      home: 36, 
+      end: 35,
+      pageup: 33, 
+      pagedown: 34,
+      ',': 188, 
+      '.': 190, 
+      '/': 191,
+      '`': 192, 
+      '-': 189, 
+      '=': 187,
+      ';': 186, 
+      '\'': 222,
+      '[': 219, 
+      ']': 221, 
+      '\\': 220
     },
-    code = function(x){
+    code = function (x) {
       return _MAP[x] || x.toUpperCase().charCodeAt(0);
     },
     _downKeys = [];
 
-  for(k=1;k<20;k++) _MAP['f'+k] = 111+k;
-  for(k=0;k<10;k++) _MAP['numpad_'+k] = 96+k;
+  // F1..F24
+  for (k = 1; k < 24; k++) { _MAP['f'+k] = 111+k; }
+  // numpad 0..9
+  for (k = 0; k < 10; k++) { _MAP['numpad_'+k] = 96+k; }
 
   // IE doesn't support Array#indexOf, so have a simple replacement
-  function index(array, item){
+  function index(array, item) {
     var i = array.length;
-    while(i--) if(array[i]===item) return i;
+    while (i--) {
+      if (array[i] === item) {
+        return i;
+      }
+    }
     return -1;
   }
 
@@ -60,8 +102,10 @@
       91:'metaKey'
   };
   function updateModifierKey(event) {
-      for(k in _mods) _mods[k] = event[modifierMap[k]];
-  };
+    for (var k in _mods) {
+      _mods[k] = event[modifierMap[k]];
+    }
+  }
 
   // handle keydown event
   function dispatch(event) {
@@ -73,18 +117,22 @@
     }
 
     // if a modifier key, set the key.<modifierkeyname> property to true and return
-    if(key == 93 || key == 224) key = 91; // right command on webkit, command on Gecko
-    if(key in _mods) {
+    if (key === 93 || key === 224) key = 91; // right command on webkit, command on Gecko
+    if (key in _mods) {
       _mods[key] = true;
       // 'assignKey' from inside this closure is exported to window.key
-      for(k in _MODIFIERS) if(_MODIFIERS[k] == key) assignKey[k] = true;
+      for (k in _MODIFIERS) {
+        if (_MODIFIERS[k] === key) {
+          assignKey[k] = true;
+        }
+      }
       return;
     }
     updateModifierKey(event);
 
     // see if we need to ignore the keypress (filter() can be overridden)
     // by default ignore key presses if a select, textarea, or input is focused
-    if(!assignKey.filter.call(this, event)) return;
+    if (!assignKey.filter.call(this, event)) return;
 
     // abort if no potentially matching shortcuts found
     if (!(key in _handlers)) return;
@@ -96,19 +144,19 @@
       handler = _handlers[key][i];
 
       // see if it's in the current scope
-      if(handler.scope == scope || handler.scope == 'all'){
+      if (handler.scope === scope || handler.scope === 'all') {
         // check if modifiers match if any
         modifiersMatch = handler.mods.length > 0;
-        for(k in _mods)
-          if((!_mods[k] && index(handler.mods, +k) > -1) ||
-            (_mods[k] && index(handler.mods, +k) == -1)) modifiersMatch = false;
+        for (k in _mods)
+          if ((!_mods[k] && index(handler.mods, +k) > -1) ||
+            (_mods[k] && index(handler.mods, +k) === -1)) modifiersMatch = false;
         // call the handler and stop the event if necessary
-        if((handler.mods.length === 0 && !_mods[16] && !_mods[18] && !_mods[17] && !_mods[91]) || modifiersMatch){
-          if(handler.method(event, handler)===false){
-            if(event.preventDefault) event.preventDefault();
-              else event.returnValue = false;
-            if(event.stopPropagation) event.stopPropagation();
-            if(event.cancelBubble) event.cancelBubble = true;
+        if ((handler.mods.length === 0 && !_mods[16] && !_mods[18] && !_mods[17] && !_mods[91]) || modifiersMatch) {
+          if (handler.method(event, handler) === false) {
+            if (event.preventDefault) event.preventDefault();
+            else event.returnValue = false;
+            if (event.stopPropagation) event.stopPropagation();
+            if (event.cancelBubble) event.cancelBubble = true;
           }
         }
       }
@@ -116,7 +164,7 @@
   }
 
   // unset modifier keys on keyup
-  function clearModifier(event){
+  function clearModifier(event) {
     var key = event.keyCode, k,
         i = index(_downKeys, key);
 
@@ -125,33 +173,43 @@
         _downKeys.splice(i, 1);
     }
 
-    if(key == 93 || key == 224) key = 91;
-    if(key in _mods) {
+    if (key === 93 || key === 224) key = 91;
+    if (key in _mods) {
       _mods[key] = false;
-      for(k in _MODIFIERS) if(_MODIFIERS[k] == key) assignKey[k] = false;
+      for (k in _MODIFIERS) {
+        if (_MODIFIERS[k] === key) {
+          assignKey[k] = false;
+        }
+      }
     }
   }
 
   function resetModifiers() {
     var k;
-    for(k in _mods) _mods[k] = false;
-    for(k in _MODIFIERS) assignKey[k] = false;
+    for (k in _mods) _mods[k] = false;
+    for (k in _MODIFIERS) assignKey[k] = false;
   }
 
   function storeKey(keyCode, key, mods, scope, method) {
     if (!(keyCode in _handlers)) _handlers[keyCode] = [];
-    _handlers[keyCode].push({ shortcut: key, scope: scope, method: method, key: key, mods: mods });
+    _handlers[keyCode].push({ 
+      shortcut: key, 
+      scope: scope, 
+      method: method, 
+      key: key, 
+      mods: mods 
+    });
   }
 
   function createKeyEvent(keyCode, mods, view, type) {
     var i;
-    var keyboardEvent = document.createEventObject ?  document.createEventObject() : document.createEvent("Events");
+    var keyboardEvent = document.createEventObject ? document.createEventObject() : document.createEvent('Events');
     keyboardEvent.initEvent(type, true, true);
     keyboardEvent.view = view;
     keyboardEvent.keyCode = keyCode;
     keyboardEvent.which = keyCode;
 
-    for(i = 0; i < mods.length; i++) {
+    for (i = 0; i < mods.length; i++) {
        keyboardEvent[modifierMap[mods[i]]] = true;
     }
      
@@ -183,7 +241,7 @@
       // set modifier keys if any
       mods = [];
       key = keys[i].split('+');
-      if (key.length > 1){
+      if (key.length > 1) {
         mods = getMods(key);
         key = [key[key.length-1]];
       }
@@ -233,7 +291,7 @@
   // Returns true if the key with code 'keyCode' is currently down
   // Converts strings into key codes.
   function isPressed(keyCode) {
-      if (typeof(keyCode)=='string') {
+      if (typeof(keyCode) === 'string') {
         keyCode = code(keyCode);
       }
       return index(_downKeys, keyCode) != -1;
@@ -251,35 +309,38 @@
         return false;
     }
     // ignore keypresses in any elements that support keyboard data input
-    return !(tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA');
+    return !(tagName === 'INPUT' || tagName === 'SELECT' || tagName === 'TEXTAREA');
   }
 
   // initialize key.<modifier> to false
-  for(k in _MODIFIERS) assignKey[k] = false;
+  for (k in _MODIFIERS) assignKey[k] = false;
 
   // set current scope (default 'all')
-  function setScope(scope){ _scope = scope || 'all'; }
-  function getScope(){ return _scope || 'all'; }
+  function setScope(scope) { _scope = scope || 'all'; }
+  function getScope() { return _scope || 'all'; }
 
   // delete all handlers for a given scope
-  function deleteScope(scope){
+  function deleteScope(scope) {
     var key, handlers, i;
 
     for (key in _handlers) {
       handlers = _handlers[key];
       for (i = 0; i < handlers.length; ) {
-        if (handlers[i].scope === scope) handlers.splice(i, 1);
-        else i++;
+        if (handlers[i].scope === scope) {
+          handlers.splice(i, 1);
+        } else {
+          i++;
+        }
       }
     }
-  };
+  }
 
   // abstract key logic for assign and unassign
   function getKeys(key) {
     var keys;
     key = key.replace(/\s/g, '');
     keys = key.split(',');
-    if ((keys[keys.length - 1]) == '') {
+    if ((keys[keys.length - 1]) === '') {
       keys[keys.length - 2] += ',';
     }
     return keys;
@@ -295,14 +356,20 @@
 
   // cross-browser events
   function addEvent(object, event, method) {
-    if (object.addEventListener)
+    if (object.addEventListener) {
       object.addEventListener(event, method, false);
-    else if(object.attachEvent)
-      object.attachEvent('on'+event, function(){ method(window.event) });
+    } else if (object.attachEvent) {
+      object.attachEvent('on'+event, function () { 
+        method(window.event);
+      });
+    }
   }
 
   // set the handlers globally on document
-  addEvent(document, 'keydown', function(event) { dispatch(event); }); // Passing _scope to a callback to ensure it remains the same by execution. Fixes #48
+  addEvent(document, 'keydown', function (event) { 
+    // Passing _scope to a callback to ensure it remains the same by execution. Fixes #48
+    dispatch(event); 
+  });
   addEvent(document, 'keyup', clearModifier);
 
   // reset modifiers to false whenever the window is (re)focused.
@@ -319,16 +386,16 @@
   }
 
   // set window.key and window.key.set/get/deleteScope, and the default filter
-  global.keymaster = assignKey;
-  global.keymaster.setScope = setScope;
-  global.keymaster.getScope = getScope;
-  global.keymaster.deleteScope = deleteScope;
-  global.keymaster.filter = filter;
-  global.keymaster.isPressed = isPressed;
-  global.keymaster.getPressedKeyCodes = getPressedKeyCodes;
-  global.keymaster.noConflict = noConflict;
-  global.keymaster.unbind = unbindKey;
+  var keymaster = assignKey;
+  keymaster.setScope = setScope;
+  keymaster.getScope = getScope;
+  keymaster.deleteScope = deleteScope;
+  keymaster.filter = filter;
+  keymaster.isPressed = isPressed;
+  keymaster.getPressedKeyCodes = getPressedKeyCodes;
+  keymaster.noConflict = noConflict;
+  keymaster.unbind = unbindKey;
+  return keymaster;
 
-  if(typeof module !== 'undefined') module.exports = keymaster;
+}));
 
-})(this);

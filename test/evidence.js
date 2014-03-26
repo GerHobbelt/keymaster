@@ -401,10 +401,10 @@ TestSuite.displayName = 'TestSuite';
   }
 
   function next() {
-    var next = this._tests[this._index];
-    if (next) {
+    var nxt = this._tests[this._index];
+    if (nxt) {
       this._index++;
-      next.run(this._result);
+      nxt.run(this._result);
     } else {
       this._result.stopSuite(this);
       if (this.parent) {
@@ -550,7 +550,7 @@ function AutoRunner() {
     var autoRunner = new this();
     options = options || autoRunner.retrieveOptions();
     autoRunner.processOptions(options);
-    if (autoRunner.autoRun) { autoRunner.run() };
+    if (autoRunner.autoRun) { autoRunner.run(); }
   }
 
   AutoRunner.run = run;
@@ -1002,8 +1002,9 @@ Console.TestResult = ConsoleTestResult;
 var UI = (function() {
   function printf(template, args, inspector) {
     var parts = [],
-        regexp = /(^%|.%)([a-zA-Z])/,
-        args = args.splice(0); // clone args
+        regexp = /(^%|.%)([a-zA-Z])/;
+
+    args = args.splice(0); // clone args
 
     inspector = inspector || String;
 
