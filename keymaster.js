@@ -396,6 +396,5 @@
   keymaster.noConflict = noConflict;
   keymaster.unbind = unbindKey;
   return keymaster;
-
 }));
 
